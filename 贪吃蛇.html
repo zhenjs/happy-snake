@@ -1,0 +1,258 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>练习</title>
+	<style type="text/css">
+      *{
+        margin:0;
+        padding:0;
+        list-style:none;
+      }
+      .wrapper{
+        position:relative;
+        height:400px;
+        width:800px;
+        margin:100px auto;
+        /*border:5px solid black;*/
+        background:pink;
+      }
+      .level1{
+        position:absolute;
+        left:100px;
+        top:100px;
+        height:50px;
+        width:80px;
+        font-size:20px;
+      }
+      .level2{
+        position:absolute;
+        left:100px;
+        top:150px;
+        height:50px;
+        width:80px;
+        font-size:20px;
+      }
+       .level3{
+        position:absolute;
+        left:100px;
+        top:200px;
+        height:50px;
+        width:80px;
+        font-size:20px;
+        background:red;
+      }
+      .move1{
+        position:absolute;
+        height:5px;
+        width:5px;
+        background:black;
+        left:65px;
+        top:50px;
+      }
+      .move2{
+        position:absolute;
+        height:5px;
+        width:5px;
+        background:black;
+        left:60px;
+        top:50px;
+      }
+      .move3{
+        position:absolute;
+        height:5px;
+        width:5px;
+        background:black;
+        left:55px;
+        top:50px;
+      }
+      .move4{
+        position:absolute;
+        height:5px;
+        width:5px;
+        background:black;
+        left:50px;
+        top:50px;
+      }
+      .food{
+        display:none;
+        position:absolute;
+        height:5px;
+        width:5px;
+        background:red;
+      }
+      .hinder{
+        width:5px;
+        height:50px;
+        position:absolute;
+        left:300px;
+        top:100px;
+        background:red;
+      }
+
+
+	</style>
+
+</head>
+<body>
+      <div class='wrapper'>
+          <ul id='parent'>
+            <li class='move1'></li>
+            <li class='move2'></li>
+            <li class='move3'></li>
+            <li class='move4'></li>
+          </ul>
+          <span class='food' id='food'></span>
+          <!-- <span class='hinder'></span> -->
+      </div>  
+      <button class='level1' id='level1'>普通</button>
+      <button class='level2' id='level2'>冒险</button>
+      <button class='level3' id='level3'>噩梦</button>   
+      <script type="text/javascript">
+       var $Ul = document.getElementById('parent')
+       var $BtnLevel1 = document.getElementById('level1')
+       var $BtnLevel2 = document.getElementById('level2')
+       var $BtnLevel3 = document.getElementById('level3')
+       var $Li = document.getElementsByTagName('li')
+       var $Span = document.getElementById('food')
+       var len = $Li.length
+       var timer = null;
+       var overtimer = null;
+       var direction = 'right';
+       var Xflag = 'true';
+       var Yflag = 'magic';
+       var flag = false;
+       var playflag = true;
+       var iSpeed = 5;
+       var speed = 150;
+       var j = 0;
+       
+       //通过改变定时器的时间间隔从而改变速度
+       $BtnLevel1.onclick = function(){
+            speed = 200;
+            clearTimeout(timer);
+            timer= setTimeout(startMove(),200);
+            foodStart();
+            flag = true;
+           
+       }
+       $BtnLevel2.onclick = function(){
+            speed = 100;
+            clearTimeout(timer);
+            timer = setTimeout(startMove(),100);
+            foodStart();
+            flag = true;
+           
+       }
+       $BtnLevel3.onclick = function(){
+            speed = 1;
+            clearTimeout(timer);
+            timer = setTimeout(startMove(),200);
+            foodStart();
+            flag = true;
+           
+       }
+       //随机生成食物事件
+       function foodStart(){
+            $Span.style.display = 'block';
+            $Span.style.left = Math.floor(Math.random() * 160) * 5 + 'px';
+            $Span.style.top = Math.floor(Math.random() * 80) * 5 + 'px';
+       }
+      
+       //绑定键盘事件，加了两个锁来保证蛇身不能后退
+       document.onkeydown = function (e){
+            var event = event || e;
+            if(event.which === 39 && Xflag !== false && flag === true){
+              direction = 'right';
+              Xflag = true;
+              Yflag = 'magic';
+              startMove();
+            }
+            if(event.which === 37 && Xflag !== true && flag === true){
+              direction = 'left';
+              Xflag = false;
+              Yflag = 'magic';
+              startMove();
+            }
+            if(event.which === 38 && Yflag !== true && flag === true){
+              direction = 'up';
+              Xflag = 'magic';
+              Yflag = false;
+              startMove();
+            }
+            if(event.which === 40 && Yflag !== false && flag === true){
+              direction = 'down';
+              Xflag = 'magic';
+              Yflag = true;
+              startMove();
+            }
+
+        }
+        function startMove(){
+            clearTimeout(timer);
+            var newleft = $Li[0].offsetLeft;
+            var newtop= $Li[0].offsetTop;
+            if(direction === 'right' ){
+                  $Li[0].style.left = $Li[0].offsetLeft + iSpeed + 'px';
+                  //碰到边界穿越
+                  if($Li[0].offsetLeft > 795){
+                      $Li[0].style.left = '0px';
+                  }
+
+            }else if(direction === 'left' ){
+                  $Li[0].style.left = $Li[0].offsetLeft - iSpeed + 'px';
+                  if($Li[0].offsetLeft < 0){
+                      $Li[0].style.left = '795px';
+                  }            
+    
+            }else if(direction === 'down'  ){
+                  $Li[0].style.top = $Li[0].offsetTop + iSpeed + 'px';
+                  if($Li[0].offsetTop > 395){
+                      $Li[0].style.top = '0px'
+                  } 
+            }else if(direction === 'up' ){
+                  $Li[0].style.top = $Li[0].offsetTop - iSpeed + 'px';
+                  if($Li[0].offsetTop < 0){
+                      $Li[0].style.top = '395px'
+                  }
+            }
+            //蛇身运动循环，蛇头先运动并记录以前位置附给第二个方块，以此类推          
+            for(var i = 1; i < len; i++){
+                  var lastleft = $Li[i].offsetLeft;
+                  var lasttop = $Li[i].offsetTop;
+                  $Li[i].style.left = newleft;
+                  $Li[i].style.top = newtop
+                  newleft = lastleft;
+                  newtop = lasttop;
+            //如果蛇头坐标等于蛇身坐标，运动锁改为false
+                  if($Li[0].offsetLeft === $Li[i].offsetLeft && $Li[0].offsetTop === $Li[i].offsetTop) {
+                        playflag = false
+                  }
+            }
+            //如果吃到食物，自身元素加一
+            if($Li[0].offsetLeft === $Span.offsetLeft && $Li[0].offsetTop === $Span.offsetTop){
+                  foodStart();
+                  li = document.createElement('li');
+                  li.style.width = '5px';
+                  li.style.height = '5px';
+                  li.style.background = 'black';
+                  li.style.position = 'absolute';
+                  li.style.left = newleft;
+                  li.style.top = newtop;
+                  $Ul.appendChild(li);
+                  len++;
+            }
+            //如果overflag为false 终止定时器
+            if(playflag){
+                  timer = setTimeout(startMove,speed);
+            }
+       }
+      
+      
+      
+
+
+           
+
+ </script>
+</body>
+</html>
